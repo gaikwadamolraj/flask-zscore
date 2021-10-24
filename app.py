@@ -1,18 +1,14 @@
 from flask import Flask, request, jsonify
 
 
-from .models import Score, db
+
 from . import config
-from . import database
+
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = config.DATABASE_CONNECTION_URI
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
-app.debug=True
 db.init_app(app)
-if config.is_db == "True":
-    db.create_all()
+
 
 
 # calculate zscore for particular years data
@@ -37,7 +33,7 @@ def calculateZscore(data):
 
 # save score to db
 def saveZscore(isoCode, companyId, score):
-    return database.add_instance(Score, isoCode=isoCode, companyId=companyId, score=score)
+    #return database.add_instance(Score, isoCode=isoCode, companyId=companyId, score=score)
 
 @app.route('/',  methods=['GET'])
 def hello():

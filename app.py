@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 
 from .models import Score, db
 from . import config
+from . import database
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = config.DATABASE_CONNECTION_URI

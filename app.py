@@ -33,7 +33,7 @@ def calculateZscore(data):
 
 # save score to db
 def saveZscore(isoCode, companyId, score):
-    #return database.add_instance(Score, isoCode=isoCode, companyId=companyId, score=score)
+    return database.add_instance(Score, isoCode=isoCode, companyId=companyId, score=score)
 
 @app.route('/',  methods=['GET'])
 def hello():

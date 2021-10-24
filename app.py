@@ -30,9 +30,9 @@ def calculateZscore(data):
 def saveZscore(isoCode, companyId, score):
     return database.add_instance(Score, isoCode=isoCode, companyId=companyId, score=score)
 
-@app.route('/',  methods=['GET'])
-def hello():
-    return jsonify({"message": "hello"}), 200
+@app.route('/')
+def index():
+    return "<h1>Welcome to our server !!</h1>"
 
 @app.route('/api/v1/company/<string:isoCode>/<int:id>', methods=['PUT'])
 def zScore(isoCode, id):

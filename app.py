@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.app_context().push()
 db.init_app(app)
 
-
+is_db=False
 
 # calculate zscore for particular years data
 def calculateZscore(data):
@@ -47,7 +47,7 @@ def zScore(isoCode, id):
         zscore = calculateZscore(d)
         zscores.append(zscore)
 
-    if config.is_db == "True":
+    if is_db == "True":
         print('i am inside')
         # save score to db and return the report id
         reportId = saveZscore(isoCode, id, zscores)
@@ -58,7 +58,7 @@ def zScore(isoCode, id):
 
 @app.route('/api/v1/company/<string:isoCode>/<int:id>/<int:reportId>', methods=['GET'])
 def getLastReportById(isoCode, id, reportId):
-    if config.is_db == "True":
+    if is_db == "True":
         reports = database.get_by_args(Score, id=reportId)
         zScoreReport = []
         for report in reports:

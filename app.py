@@ -1,6 +1,6 @@
 from flask import request, jsonify
 
-from . import create_app, database
+from start import create_app
 from .models import Score
 from . import config
 

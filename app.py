@@ -1,9 +1,10 @@
-from flask import Flask, request, jsonify
+from flask import request, jsonify
 
-app = Flask(__name__)
+from . import create_app, database
+from .models import Score
+from . import config
 
-
-is_db=False
+app = create_app()
 
 # calculate zscore for particular years data
 def calculateZscore(data):
@@ -25,10 +26,9 @@ def calculateZscore(data):
 
     return { "year": year, "zscore": (1.2*X1 + 1.4*X2 + 3.3*X3 + 0.6*X4 + 1.0*X5)}  
 
-
-@app.route('/',  methods=['GET'])
-def hello():
-    return jsonify({"message": "hello"}), 200
+# save score to db
+def saveZscore(isoCode, companyId, score):
+    return database.add_instance(Score, isoCode=isoCode, companyId=companyId, score=score)
 
 @app.route('/api/v1/company/<string:isoCode>/<int:id>', methods=['PUT'])
 def zScore(isoCode, id):
@@ -38,8 +38,29 @@ def zScore(isoCode, id):
         zscore = calculateZscore(d)
         zscores.append(zscore)
 
-    return jsonify({"scores": zscores})
+    if config.is_db == "True":
+        print('i am inside')
+        # save score to db and return the report id
+        reportId = saveZscore(isoCode, id, zscores)
+        return jsonify({"scores": zscores, "reportId" : reportId})
+    else:
+        print('i am inside else', config.is_db)
+        return jsonify({"scores": zscores})
 
 @app.route('/api/v1/company/<string:isoCode>/<int:id>/<int:reportId>', methods=['GET'])
 def getLastReportById(isoCode, id, reportId):
-    return jsonify({"message": "Not connected with db, so no prev report"})
+    if config.is_db == "True":
+        reports = database.get_by_args(Score, id=reportId)
+        zScoreReport = []
+        for report in reports:
+            if(id == report.companyId and isoCode == report.isoCode):
+                zReport =  {
+                        "id": report.id,
+                        "isoCode": report.isoCode,
+                        "companyId": report.companyId,
+                        "score": report.score
+                    }
+                zScoreReport.append(zReport)
+        return jsonify(zScoreReport), 200
+    else:
+        return jsonify({"message": "Not connected with db, so no prev report"})
